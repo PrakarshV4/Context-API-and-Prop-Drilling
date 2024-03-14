@@ -1,0 +1,108 @@
+Route
+
+Jargons
+1. Single Page applications: Dynamically changing the page  and not refetching something from the backend.
+2. Client side bundles: The bundles that you get on the client that has all the javascript code 
+3. Client side routing: The code that you write as an application developer to make sure the user in the landing page,messaing page ,etc.
+
+Routing in React?
+react-router-dom : Routing on thr DOM  
+
+function App(){
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path='/dashboard' element={<Dashboard />} />
+                <Route path='/' element={<Landing />} />
+            </Routes>
+        </BrowserRouter>
+    )
+} 
+
+if we use location.href then it is same as opening the page in a new tab, i.e, we get all html,css ,js file from the server.
+To prevent this reloading we use the hook useNavigate()
+
+useNavigate():
+const navigate = useNavigate();
+funcion handleClick(){
+    navigate('/');
+}
+return (
+    <button onclick={handleClick}>Click to navigate</button>
+)
+
+Lazy Loading: what happens is when a client goes on landing page the webpage receives all the html of all 20 pages that the website has. So the problem is that it should only receive the html of that landing page and when he moves to another page then he shoulg get the html of that page.So instead of giving them the whole bundle incrementally giving them the bundle and hence lazy loading was introduced.
+
+import React from 'react';
+import {BrowserRouter,Routes,Route} from 'react-router-dom';
+const Dashboard = React.lazy(()=> import ("./components/dashboard"))
+
+function App(){
+    return(
+        <BrowserRouter>
+            <Routes>
+                <Route path='/dashboard' element = {<Suspense  fallback={"loading..."}><Dashboard /></Suspense} />
+                <Route path='/' element = {<Suspense  fallback={"loading..."}><Landing /></Suspense} />
+            </Routes>
+        </BrowserRouter>
+    )
+}
+
+Suspense API : used for asynchronous component fetching , asynchronous data fetching. In the above code we need to wrap the <Dashboard/> and the <Landing/> as they become asynchronous  
+
+Props drillings: You need to drill props down through the components tree.This gets very hard to maintain and highly verbose and makes the code highly unreadable.
+
+    Prop drilling doesn't mean that parent re-renders the children , it just means the syntactic uneasiness when writing code 
+
+Q. The problem with passing props??
+Ans: Passing props is a great way to pipe data through your UI tree to the component that uses it. 
+But passing props can become verbose and inconvinent when you need to pass some prop deeply through the tree, or if many components need the same prop. The nearest common ancestor could be far removed from the component that need data, and lifting state up that high can lead to a situation called 'prop drilling'.
+
+If you are using context api , you are pushing your state management outside the core react components.And it lets you keep your state logic outside of your core react component.
+
+Context API:
+    1. createContext
+    2. Provider
+    3. useContext
+
+Steps:  1. Create a context.jsx file and create a CountContext which is a state that could be teleported
+            export const CountContext = createContext(0);
+        
+        2. wrap anyone that wants to use the teleported value inside a provider 
+            function App() {
+                const [count,setCount] = useState(0);
+
+                return (
+                    <>
+                    <CountContext.Provider value={count}>
+                        <Count setCount={setCount}/>
+                    </CountContext.Provider>
+                    </>
+                )
+                
+                }
+                function Count({setCount}) {
+                return <div>
+                    <CountRender />
+                    <Buttons setCount={setCount}  />
+                </div>
+                }
+
+                function CountRender() {
+                const count = useContext(CountContext)
+                return <div>
+                    {count}
+                </div>
+                }
+
+                function Buttons({setCount}) {
+                const count = useContext(CountContext)
+                return <div>
+                    <button onClick={()=>{
+                    setCount(count + 1);
+                    }}>Increase</button>
+                    <button onClick={()=>{
+                    setCount(count - 1);
+                    }}>Decrease</button>
+                </div>
+            }
