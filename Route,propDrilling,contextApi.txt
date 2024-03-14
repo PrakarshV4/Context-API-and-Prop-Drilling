@@ -106,3 +106,10 @@ Steps:  1. Create a context.jsx file and create a CountContext which is a state 
                     }}>Decrease</button>
                 </div>
             }
+
+DRAWBACKS of Context api:
+UNNECESSARY RE-RENDERS: It does not solve the problem of re-renders ,i.e, when the child component doesnt use countContext still that component will re-render . in above example the function Count() doesnot call useContext() but it still gets rendered . Therefore a better way of state management is required.
+
+Imp Question : Why do you use Context Api
+                1. To make rendering more performant ?? NOOO it doesn't fix rerendering issues
+                2. To make syntax cleaner/ get rid of prop drilling ?? YESSSS
